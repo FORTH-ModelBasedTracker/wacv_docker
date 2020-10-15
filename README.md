@@ -1,13 +1,15 @@
-# Dockerfile for the WACV18 paper
+# Dockerfile for WACV18: Monocular 3D hand tracking in the wild
 
 WACV18: Using a single RGB frame for real time 3D hand pose estimation in the wild
 
 
 ## Docker+GPU 101
 
-This is a short step-by-step intro to install docker-ce and nvidia-docker on a workstation (or cloud server). Ubuntu OS and properly installed NVIDIA GPU (drivers etc) is asssumed.
+This is a short step-by-step intro to install _docker-ce_ and _nvidia-docker_ on a workstation (or cloud server). 
+The first is the community edition (ce) of docker and the later is the nvidia backed project that brings GPU support to docker containers.
 
-Note: Docker has very good [documentation](https://docs.docker.com/) and community. Check the docs for more details on Dockerfiles, the docker container registry, docker images and docker containers. 
+**Note:** Ubuntu OS and a properly installed NVIDIA GPU (drivers etc) is asssumed. 
+**Note:** Docker has very good [documentation](https://docs.docker.com/) and community. Check the docs for more details on Dockerfiles, the docker container registry, docker images and docker containers. 
 
 ### Installation
 
@@ -38,12 +40,12 @@ Note: Docker has very good [documentation](https://docs.docker.com/) and communi
    sudo systemctl restart docker
    ```
 
-   4. Make sure your user is in the docker group. If not add it
+   4. Make sure your user is in the docker group. If not add it (and logout/login):
 
    ```bash
    sudo usermod -aG docker $USER
    ```
-**Note:** Official nvidia-docker instructions [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#installing-on-ubuntu-and-debian).
+**Note:** Taken from the official nvidia-docker instructions [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#installing-on-ubuntu-and-debian).
 
 Done! You should be ready to test docker containers with Nvidia GPU support now:
 
