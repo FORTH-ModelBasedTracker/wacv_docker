@@ -9,6 +9,7 @@ This is a short step-by-step intro to install _docker-ce_ and _nvidia-docker_ on
 The first is the community edition (ce) of docker and the later is the nvidia backed project that brings GPU support to docker containers.
 
 **Note:** Ubuntu OS and a properly installed NVIDIA GPU (drivers etc) is asssumed. 
+
 **Note:** Docker has very good [documentation](https://docs.docker.com/) and community. Check the docs for more details on Dockerfiles, the docker container registry, docker images and docker containers. 
 
 ### Installation
@@ -57,7 +58,7 @@ docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
 
 ## Docker basic concepts
 
-A **Dockerfile** is recipy for creating docker images. It is a text file with a series of commands. The commands are executed with ```docker build``` and the result is a **docker image**.
+A **Dockerfile** is a recipe for creating docker images. The recipe is executed with ```docker build``` and the result is a **docker image**.
 The **image** is used to start **containers** and run your applications in them.
 
 An image is _immutable_ and can be used to start multiple containers. Containers are _mutable_ instances of an image.
@@ -66,16 +67,16 @@ A **container registry** is a repository of Dockerfiles and images (not containe
 
 ## Preparing to build the WACV18 image
 
-First we need to clone all the relevant projects from our git server: MBV, LevmarIK, Monohand3D.
-- Go to the **projects** folder and follow the [instructions](projects/README.md).
-- Got to the **models** folder and download the openpose models using
-```bash
-getModels.sh
-```
+First we need to clone all the relevant projects from our git server (MBV, LevmarIK, Monohand3D), and download the openpose models.
+1. Go to the **projects** folder and follow the [instructions](projects/README.md).
+2. Go to the **models** folder and download the openpose models using:
+   ```bash
+   getModels.sh
+   ```
 
 ## WACV18 Dockerfile
 
-The Dockerfile in this repository creates an image with all the dependencies needed to work on the WACV18 Monocular 3D hand tracking codebase. Check the comments in Dockerfile for a step by step walkthrough of the commands.
+The Dockerfile in this repository creates an image with all the dependencies needed to work on the WACV18 Monocular 3D hand tracking codebase. Check the comments in [Dockerfile](Dockerfile) for a step by step walkthrough of the commands.
 
 Once you are done reading it, you can build it like so:
 
@@ -100,3 +101,24 @@ docker run -it --gpus all --name wacv_cnt --rm -v $PWD:/workspace -e DISPLAY=$DI
 ```
 
 **Note:** The **-e** passes an environment variable to the new container. 
+
+
+## VSCode and Docker
+
+VSCode has excellent support for docker. Install the **Docker** plugin by Microsoft and you can browse and manage images and containers from inside vscode.
+Moreover when a container is running you can **attach vscode** to it and work as you would normally on your local machine!
+
+### VSCode and Remote Docker 
+If you are working remotelly you can attach to remote docker containers as well. 
+First configure you ssh pub-key with the remote machine to enable password-less logins.
+
+The configure the docker context using vscode
+1. Install the following plugins to vscode: docker, Remote-Development
+2. Go to your workspace preferences: ctrl+shift+p -> Prefferences -> Open workspace Settings
+3. Search for **docker.host**
+4. Enter your remote host url. i.e ```ssh://padeler@192.168.10.10:22```
+
+Now go to the docker tab in vscode and you will see the containers and images available on the remote host. 
+Right click on a container to attach.
+
+**Note:** You can also configure the remote host using "docker context" but when using multiple remote hosts with non static ips (i.e GCP) I found this is the cleaner way.

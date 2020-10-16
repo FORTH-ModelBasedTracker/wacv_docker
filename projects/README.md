@@ -12,3 +12,5 @@ Clone or copy the corresponding projects from the cvrl git repo:
 - Monohand3D: /users/padeler/MonoHand3D.git
     branch "master"
 
+- PyCvUtils: /users/padeler/PyCvUtils.git
+   branch "master"
