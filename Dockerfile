@@ -5,18 +5,18 @@
 # NOTE: This is also part of a docker 101 tutorial
 #       so the comments are very verbose.
 
-# For this build we will use ubuntu16.04 
+# For this build we will use ubuntu18.04 
 # We will start from the nvidia provided image that also 
 # comes with cuda and cudnn and drivers preinstalled.
 # Note: There are many containers available. 
 #       Before starting your own Dockerfile make sure you find the 
 #       closest image to your needs to avoid re-creating the wheel.
-FROM nvcr.io/nvidia/cuda:10.2-cudnn7-devel-ubuntu16.04
+FROM nvcr.io/nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
 
 # COPY from host to docker image.
 # NOTE: Make sure you first download the models using the 
 # getModels.sh script inside the models folder
-COPY models openpose/models/
+# COPY models openpose/models/
 
 
 # Install basic dependencies for our project
@@ -30,16 +30,22 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y libboost-all-dev libpyth
                     git cmake vim libgoogle-glog-dev libprotobuf-dev protobuf-compiler \
                     libhdf5-dev libatlas-base-dev liblmdb-dev libleveldb-dev \
                     libsnappy-dev wget unzip  apt-utils libpython-dev python-numpy \
-                    libtbb-dev libglew-dev libopenni-dev libglm-dev freeglut3-dev libeigen3-dev
+                    libtbb-dev libglew-dev libopenni-dev libglm-dev freeglut3-dev libeigen3-dev \
+                    libgtk2.0-dev pkg-config
 
-# RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 10 
-# RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+# needed by MonoHand3D
+RUN pip install scipy
 
 # define a working directory for our application or shell
 WORKDIR /wacv18
 
 # NOTE: Each of the following RUN commands is executed on a new shell
 # starting at WORKDIR
+
+
+# NOTE: Openpose needs opencv with CUDA support. Because of that we have to build it from source
+# since the prepackaged binaries provided by Ubuntu do not have GPU support.
+# Otherwise we could just do: RUN apt-get install -y libopencv-dev
 
 # Build opencv 
 RUN mkdir opencv && cd opencv && wget https://github.com/opencv/opencv/archive/3.4.11.zip && unzip 3.4.11.zip && rm 3.4.11.zip  && \
@@ -69,7 +75,8 @@ RUN cd openpose && cp ubuntu_deprecated/Makefile.example Makefile && \
     make all -j`nproc` && make distribute -j`nproc` 
 
 # This would be normally done by cmake but since we used the Makefiles for openpose build:
-RUN cp -r openpose/3rdparty/caffe/distribute/* openpose/distribute
+RUN cp -r openpose/3rdparty/caffe/distribute/* openpose/distribute && \
+    ln -s /workspace/models openpose/distribute/models
 
 # NOTE: Each command creates a new image LAYER. 
 # Group commands together to minimize the number of layers and speed-up build/startup times.
@@ -87,30 +94,30 @@ RUN git clone https://github.com/FORTH-ModelBasedTracker/PyOpenPose.git && \
     make -j`nproc` && make install
 
 
-# Build MBV 
-RUN apt-get install -y libxmu-dev libxi-dev
+# Build MBV
+# Note: For Ubuntu 16.04 install these extra debs: RUN apt-get install -y libxmu-dev libxi-dev
 COPY projects/mbv mbv
 RUN mkdir mbv/build && cd mbv/build && \
     cmake -DWITH_Physics=OFF -DWITH_Examples=OFF  .. && \
     make -j`nproc` && make install 
 
+# PyCvUtils
+COPY projects/PyCvUtils PyCvUtils
+
 ENV MBV_SDK=/usr/local
 ENV MBV_APPS=/usr/local
-ENV PYTHONPATH="${PYTHONPATH}:${MBV_SDK}/lib"
+ENV PYTHONPATH="${PYTHONPATH}:/wacv18/PyCvUtils/src:${MBV_SDK}/lib"
 
 # Build Ceres
 RUN mkdir ceres && cd ceres && wget http://ceres-solver.org/ceres-solver-1.14.0.tar.gz && \
     tar -zxvf ceres-solver-1.14.0.tar.gz && mkdir build && cd build && \
     cmake ../ceres-solver-1.14.0 && make -j`nproc` && make install
 
-
 # Build LevmarIK
 COPY projects/LevmarIK LevmarIK
 RUN mkdir LevmarIK/build && cd LevmarIK/build && \
     cmake .. && make -j`nproc`&& make install
 
-# Finally get MonoHand3D
-COPY projects/MonoHand3D MonoHand3D
 
 # Define a mount point to access the host filesystem
 VOLUME /workspace
