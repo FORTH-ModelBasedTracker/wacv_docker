@@ -97,10 +97,24 @@ docker run -it --gpus all --name wacv_cnt --rm  -v $PWD:/workspace wacv_image
 
 You can start GUI on your host's X server like so:
 ```bash
-docker run -it --gpus all --name wacv_cnt --rm -v $PWD:/workspace -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix wacv_image
+docker run -it --gpus all --name wacv_cnt --rm -v $PWD:/workspace -e DISPLAY=$DISPLAY --device /dev/video0 -v /tmp/.X11-unix:/tmp/.X11-unix wacv_image
 ```
 
-**Note:** The **-e** passes an environment variable to the new container. 
+**Note:** The **-e** passes an environment variable to the new container. The **--device** will link the corresponding container device to the host. In this example we are using the usb camera.
+
+Now we can run some test scripts in the container. First allow incoming connections to your host X server. Run the following on the host:
+```bash
+xhost +
+```
+
+Lets try the PyOpenPose sample scripts. On the container terminal enter the following
+```bash
+cd /wacv18/PyOpenPose/scripts
+python OpLoop.py
+```
+
+You should be able to see live video from your webcam with the OpenPose visualizations.
+
 
 
 ## VSCode and Docker
@@ -109,7 +123,7 @@ VSCode has excellent support for docker. Install the **Docker** plugin by Micros
 Moreover when a container is running you can **attach vscode** to it and work as you would normally on your local machine!
 
 ### VSCode and Remote Docker 
-If you are working remotelly you can attach to remote docker containers as well. 
+If you are working remotelly you can attach to remote docker containers as well.
 First configure you ssh pub-key with the remote machine to enable password-less logins.
 
 The configure the docker context using vscode
@@ -118,7 +132,7 @@ The configure the docker context using vscode
 3. Search for **docker.host**
 4. Enter your remote host url. i.e ```ssh://padeler@192.168.10.10:22```
 
-Now go to the docker tab in vscode and you will see the containers and images available on the remote host. 
+Now go to the docker tab in vscode and you will see the containers and images available on the remote host.
 Right click on a container to attach.
 
 **Note:** You can also configure the remote host using "docker context" but when using multiple remote hosts with non static ips (i.e GCP) I found this is the cleaner way.

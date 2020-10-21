@@ -109,14 +109,21 @@ ENV MBV_APPS=/usr/local
 ENV PYTHONPATH="${PYTHONPATH}:/wacv18/PyCvUtils/src:${MBV_SDK}/lib"
 
 # Build Ceres
-RUN mkdir ceres && cd ceres && wget http://ceres-solver.org/ceres-solver-1.14.0.tar.gz && \
-    tar -zxvf ceres-solver-1.14.0.tar.gz && mkdir build && cd build && \
-    cmake ../ceres-solver-1.14.0 && make -j`nproc` && make install
+RUN mkdir ceres && cd ceres && wget http://ceres-solver.org/ceres-solver-1.13.0.tar.gz && \
+    tar -zxvf ceres-solver-1.13.0.tar.gz && mkdir build && cd build && \
+    cmake ../ceres-solver-1.13.0 && make -j`nproc` && make install
 
 # Build LevmarIK
 COPY projects/LevmarIK LevmarIK
 RUN mkdir LevmarIK/build && cd LevmarIK/build && \
     cmake .. && make -j`nproc`&& make install
+
+
+# Enable OpenGL support 
+RUN apt-get install -y -qq --no-install-recommends libglvnd0 libgl1 libglx0 libegl1 libxext6 libx11-6
+# Env vars for the nvidia-container-runtime.
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
 
 # Define a mount point to access the host filesystem
