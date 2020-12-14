@@ -31,6 +31,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y libboost-all-dev libpyth
                     libhdf5-dev libatlas-base-dev liblmdb-dev libleveldb-dev \
                     libsnappy-dev wget unzip  apt-utils libpython-dev python-numpy \
                     libtbb-dev libglew-dev libopenni-dev libglm-dev freeglut3-dev libeigen3-dev \
+                    ffmpeg x264 libx264-dev \
                     libgtk2.0-dev pkg-config
 
 # needed by MonoHand3D
