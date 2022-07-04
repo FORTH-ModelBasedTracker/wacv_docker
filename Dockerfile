@@ -24,6 +24,9 @@ FROM nvcr.io/nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
 # Since docker build is supposed to be unattended we pass the 
 # appropriate ENV variables to configure everything 
 # without dialogs (in this case tzdata package)
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
+
 RUN apt-get update
 RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe/Athens" apt-get install -y tzdata
 RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y libboost-all-dev libpython-dev python-pip \
@@ -126,8 +129,5 @@ RUN apt-get install -y -qq --no-install-recommends libglvnd0 libgl1 libglx0 libe
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
-
-# Define a mount point to access the host filesystem
-VOLUME /workspace
 # Set the workspace location (where new code will go)
 WORKDIR /workspace
