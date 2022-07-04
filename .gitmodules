@@ -1,0 +1,12 @@
+[submodule "projects/mbv"]
+	path = projects/mbv
+	url = ssh://padeler@cvrlcode.ics.forth.gr:29418/projects/mbv.git
+[submodule "projects/LevmarIK"]
+	path = projects/LevmarIK
+	url = ssh://padeler@cvrlcode.ics.forth.gr:29418/users/padeler/LevmarIK.git
+[submodule "projects/MonoHand3D"]
+	path = projects/MonoHand3D
+	url = ssh://padeler@cvrlcode.ics.forth.gr:29418/users/padeler/MonoHand3D.git
+[submodule "projects/PyCvUtils"]
+	path = projects/PyCvUtils
+	url = ssh://padeler@cvrlcode.ics.forth.gr:29418/users/padeler/PyCvUtils.git
